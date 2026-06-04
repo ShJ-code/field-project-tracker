@@ -1,12 +1,14 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, type KeyboardEvent } from 'react';
 import {
   PRIORITIES,
   PROJECT_STATUSES,
   type CreateProjectInput,
+  type GeocodeResult,
   type Priority,
   type Project,
   type ProjectStatus,
 } from '@field-tracker/shared';
+import { useGeocoder } from '../app/use-geocoder.js';
 import { labelize } from './format.js';
 
 interface Props {
@@ -42,8 +44,24 @@ export function ProjectForm({ initial, onSubmit, onCancel }: Props) {
     initial ? String(initial.longitude) : EMPTY.longitude,
   );
   const [notes, setNotes] = useState(initial?.notes ?? EMPTY.notes);
+  const [address, setAddress] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const geocoder = useGeocoder();
+
+  function handleAddressKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // don't submit the whole form
+      void geocoder.search(address);
+    }
+  }
+
+  function pickPlace(place: GeocodeResult) {
+    setLatitude(String(place.latitude));
+    setLongitude(String(place.longitude));
+    setAddress(place.label);
+    geocoder.clear();
+  }
 
   function resetToEmpty() {
     setTitle(EMPTY.title);
@@ -53,6 +71,8 @@ export function ProjectForm({ initial, onSubmit, onCancel }: Props) {
     setLatitude(EMPTY.latitude);
     setLongitude(EMPTY.longitude);
     setNotes(EMPTY.notes);
+    setAddress('');
+    geocoder.clear();
   }
 
   async function handleSubmit(event: FormEvent) {
@@ -142,6 +162,52 @@ export function ProjectForm({ initial, onSubmit, onCancel }: Props) {
           onChange={(e) => setDueDate(e.target.value)}
         />
       </label>
+
+      <div className="field field--wide">
+        <span>Find by address</span>
+        <div className="address-search">
+          <input
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            onKeyDown={handleAddressKeyDown}
+            placeholder="Search an address or place, e.g. 1600 Pennsylvania Ave NW"
+          />
+          <button
+            type="button"
+            className="button--ghost"
+            onClick={() => void geocoder.search(address)}
+            disabled={geocoder.status === 'loading' || address.trim().length < 3}
+          >
+            {geocoder.status === 'loading' ? 'Searching…' : 'Find'}
+          </button>
+        </div>
+        {geocoder.status === 'empty' && (
+          <p className="muted address-search__hint">No matches found.</p>
+        )}
+        {geocoder.status === 'error' && (
+          <p className="error address-search__hint">
+            Address lookup failed. Try again.
+          </p>
+        )}
+        {geocoder.results.length > 0 && (
+          <ul className="address-results">
+            {geocoder.results.map((place, index) => (
+              <li key={`${place.latitude},${place.longitude},${index}`}>
+                <button
+                  type="button"
+                  className="address-results__item"
+                  onClick={() => pickPlace(place)}
+                >
+                  <span className="address-results__label">{place.label}</span>
+                  <span className="mono address-results__coords">
+                    {place.latitude.toFixed(5)}, {place.longitude.toFixed(5)}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       <label className="field">
         <span>Latitude</span>

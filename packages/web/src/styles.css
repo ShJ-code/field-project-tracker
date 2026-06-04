@@ -130,6 +130,73 @@ body {
   gap: 10px;
 }
 
+/* --- Address search --- */
+.address-search {
+  display: flex;
+  gap: 8px;
+}
+
+.address-search input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+}
+
+.address-search input:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: -1px;
+}
+
+.address-search > button {
+  white-space: nowrap;
+}
+
+.address-search__hint {
+  margin-top: 4px;
+  font-size: 0.8rem;
+}
+
+.address-results {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.address-results li + li {
+  border-top: 1px solid var(--border);
+}
+
+.address-results__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  color: var(--text);
+  border: none;
+  border-radius: 0;
+  padding: 8px 10px;
+  font-weight: 500;
+}
+
+.address-results__item:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.address-results__label {
+  font-size: 0.85rem;
+}
+
+.address-results__coords {
+  color: var(--muted);
+}
+
 /* --- Buttons --- */
 button {
   padding: 8px 14px;

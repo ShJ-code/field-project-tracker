@@ -4,14 +4,17 @@ import express, {
   type Express,
 } from 'express';
 import { ZodError } from 'zod';
+import type { GeocodingService } from '../domain/geocoding-service.js';
 import type { ProjectService } from '../domain/project-service.js';
 import type { SiteWeatherService } from '../domain/site-weather-service.js';
 import { NotFoundError } from '../domain/errors.js';
+import { createGeocodeRouter } from './geocode-router.js';
 import { createProjectsRouter } from './projects-router.js';
 
 export interface AppDependencies {
   projectService: ProjectService;
   siteWeatherService: SiteWeatherService;
+  geocodingService: GeocodingService;
   webOrigin: string;
 }
 
@@ -33,6 +36,7 @@ export function createApp(deps: AppDependencies): Express {
     '/api/projects',
     createProjectsRouter(deps.projectService, deps.siteWeatherService),
   );
+  app.use('/api/geocode', createGeocodeRouter(deps.geocodingService));
 
   app.use(errorHandler);
   return app;

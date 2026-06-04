@@ -88,6 +88,15 @@ export interface SiteWeather {
   risk: SiteRisk;
 }
 
+// --- Geocoding -------------------------------------------------------------
+
+/** A place matched from a free-text address search. */
+export interface GeocodeResult {
+  label: string;
+  latitude: number;
+  longitude: number;
+}
+
 // --- API error shape -------------------------------------------------------
 
 export interface ApiError {

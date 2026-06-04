@@ -39,15 +39,16 @@ and never make a lower layer import an upper one.
 
 ### Backend (`packages/server/src`)
 ```
-api/        Express routers + app factory + zod validation   (HTTP <-> domain)
-domain/     ProjectService, SiteWeatherService, risk.ts       (business rules)
-ports/      ProjectRepository, WeatherProvider                 (interfaces only)
-adapters/   SqliteProjectRepository, OpenMeteoWeatherProvider  (the two seams)
+api/        Express routers + app factory + zod validation     (HTTP <-> domain)
+domain/     ProjectService, SiteWeatherService, GeocodingService, risk.ts   (business rules)
+ports/      ProjectRepository, WeatherProvider, Geocoder         (interfaces only)
+adapters/   Sqlite…, OpenMeteo…, Nominatim… (geocoder)           (the seams)
 main.ts     composition root: builds adapters, injects them, starts the server
 ```
 - `domain/` imports only `ports/` + `@field-tracker/shared`. It must not import Express, the DB
   driver, or `fetch`.
-- `adapters/` are the **only** files allowed to import `better-sqlite3` / call `fetch` to Open-Meteo.
+- `adapters/` are the **only** files allowed to import `better-sqlite3` / call `fetch` to an external
+  service (Open-Meteo, Nominatim).
 - Risk thresholds live in `domain/risk.ts` (a business rule), **not** in the weather adapter. The
   adapter only normalizes the provider response into `WeatherSnapshot`.
 - Repository methods are `async` even though SQLite is synchronous, so the port can later be backed
