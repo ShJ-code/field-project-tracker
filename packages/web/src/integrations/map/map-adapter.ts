@@ -1,4 +1,4 @@
-import type { Priority } from '@field-tracker/shared';
+import type { Priority, RiskLevel } from '@field-tracker/shared';
 
 /** The data a marker needs — deliberately not a full Project. */
 export interface MapMarker {
@@ -7,6 +7,13 @@ export interface MapMarker {
   longitude: number;
   title: string;
   priority: Priority;
+}
+
+/** Structured popup content; the adapter decides how to render it. */
+export interface MapPopupContent {
+  title: string;
+  lines: string[];
+  risk?: { level: RiskLevel; label: string };
 }
 
 /**
@@ -19,6 +26,8 @@ export interface MapAdapter {
   setSelected(id: string | null): void;
   focus(id: string): void;
   onMarkerClick(handler: (id: string) => void): void;
+  showPopup(id: string, content: MapPopupContent): void;
+  hidePopup(): void;
   destroy(): void;
 }
 

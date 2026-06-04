@@ -1,5 +1,6 @@
 import type { Project } from '@field-tracker/shared';
 import { labelize } from './format.js';
+import { RiskBadge } from './RiskBadge.js';
 
 interface Props {
   projects: Project[];
@@ -31,6 +32,7 @@ export function ProjectTable({
           <th>Priority</th>
           <th>Due</th>
           <th>Location</th>
+          <th>Site risk</th>
           <th aria-label="Actions" />
         </tr>
       </thead>
@@ -55,6 +57,9 @@ export function ProjectTable({
             <td>{project.dueDate ?? '—'}</td>
             <td className="mono">
               {project.latitude.toFixed(2)}, {project.longitude.toFixed(2)}
+            </td>
+            <td>
+              <RiskBadge project={project} />
             </td>
             <td
               className="table__actions"

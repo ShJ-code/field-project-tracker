@@ -1,5 +1,10 @@
 import maplibregl from 'maplibre-gl';
-import type { MapAdapter, MapAdapterFactory, MapMarker } from './map-adapter.js';
+import type {
+  MapAdapter,
+  MapAdapterFactory,
+  MapMarker,
+  MapPopupContent,
+} from './map-adapter.js';
 
 // Keyless vector tiles from OpenFreeMap; override with VITE_MAP_STYLE_URL.
 const DEFAULT_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
@@ -13,6 +18,7 @@ const DEFAULT_ZOOM = 3.2;
 class MapLibreAdapter implements MapAdapter {
   private readonly map: maplibregl.Map;
   private readonly markers = new Map<string, maplibregl.Marker>();
+  private popup: maplibregl.Popup | null = null;
   private clickHandler: ((id: string) => void) | null = null;
 
   constructor(container: HTMLElement, styleUrl: string) {
@@ -72,9 +78,51 @@ class MapLibreAdapter implements MapAdapter {
     this.clickHandler = handler;
   }
 
+  showPopup(id: string, content: MapPopupContent): void {
+    const marker = this.markers.get(id);
+    if (!marker) {
+      return;
+    }
+    if (!this.popup) {
+      this.popup = new maplibregl.Popup({
+        offset: 14,
+        closeButton: false,
+        className: 'map-popup',
+      });
+    }
+    this.popup
+      .setLngLat(marker.getLngLat())
+      .setHTML(renderPopupHtml(content))
+      .addTo(this.map);
+  }
+
+  hidePopup(): void {
+    this.popup?.remove();
+  }
+
   destroy(): void {
+    this.popup?.remove();
     this.map.remove();
   }
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(
+    /[&<>"]/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c] ?? c,
+  );
+}
+
+function renderPopupHtml(content: MapPopupContent): string {
+  const risk = content.risk
+    ? `<div class="risk risk--${content.risk.level} popup__risk">${escapeHtml(
+        content.risk.label,
+      )}</div>`
+    : '';
+  const lines = content.lines
+    .map((line) => `<div class="popup__line">${escapeHtml(line)}</div>`)
+    .join('');
+  return `<div class="popup__title">${escapeHtml(content.title)}</div>${risk}${lines}`;
 }
 
 export const createMapLibreAdapter: MapAdapterFactory = (container) => {
