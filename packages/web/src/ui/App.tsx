@@ -1,10 +1,16 @@
 import { useState } from 'react';
 import type { CreateProjectInput, Project } from '@field-tracker/shared';
 import { useProjects } from '../app/use-projects.js';
+import type { MapAdapterFactory } from '../integrations/map/map-adapter.js';
 import { ProjectForm } from './ProjectForm.js';
+import { ProjectMap } from './ProjectMap.js';
 import { ProjectTable } from './ProjectTable.js';
 
-export function App() {
+interface AppProps {
+  createMap: MapAdapterFactory;
+}
+
+export function App({ createMap }: AppProps) {
   const { projects, loading, error, create, update, complete, remove } =
     useProjects();
   const [editing, setEditing] = useState<Project | null>(null);
@@ -62,6 +68,19 @@ export function App() {
               }}
             />
           )}
+        </section>
+
+        <section className="panel">
+          <div className="panel__header">
+            <h2>Map</h2>
+            <span className="muted">Click a marker or row to focus</span>
+          </div>
+          <ProjectMap
+            createMap={createMap}
+            projects={projects}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+          />
         </section>
       </main>
     </div>

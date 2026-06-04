@@ -252,6 +252,43 @@ button:disabled {
   color: #b91c1c;
 }
 
+/* --- Map --- */
+.map {
+  height: 440px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.map-marker {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(16, 24, 40, 0.3);
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.map-marker--low {
+  background: #64748b;
+}
+.map-marker--medium {
+  background: #2563eb;
+}
+.map-marker--high {
+  background: #ea8a0c;
+}
+.map-marker--critical {
+  background: #dc2626;
+}
+
+.map-marker.is-selected {
+  transform: scale(1.35);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.35);
+}
+
 /* --- Risk badge (weather) --- */
 .risk {
   display: inline-flex;
