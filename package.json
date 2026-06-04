@@ -1,0 +1,21 @@
+{
+  "name": "field-tracker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Lightweight field project tracker with a table + map view and live weather-based site risk.",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,web -c blue,magenta \"npm:dev:server\" \"npm:dev:web\"",
+    "dev:server": "npm run dev --workspace @field-tracker/server",
+    "dev:web": "npm run dev --workspace @field-tracker/web",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.6.3"
+  }
+}
