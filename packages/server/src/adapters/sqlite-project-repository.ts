@@ -100,6 +100,10 @@ export class SqliteProjectRepository implements ProjectRepository {
   async delete(id: string): Promise<void> {
     this.db.prepare('DELETE FROM projects WHERE id = ?').run(id);
   }
+
+  close(): void {
+    this.db.close();
+  }
 }
 
 function rowToProject(row: ProjectRow): Project {

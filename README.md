@@ -124,7 +124,29 @@ npm run test --workspace @field-tracker/server
 The full UI flow (CRUD, map marker ↔ row selection, risk badges and popups) was verified end-to-end
 in a real browser during development.
 
-## Status & next steps
+## Deployment
 
-This is **Stage 1**: a complete, locally verified application. Stage 2 is deployment (containerizing
-the API + static web build and choosing a host).
+In production the app runs as a **single service**: the API also serves the built React app, so the
+whole thing is one origin (no CORS, one URL). `npm run build` produces `packages/web/dist` (static
+SPA) and `packages/server/dist/main.cjs` (the API bundled with esbuild); `npm start` runs the bundle,
+which serves the SPA when that build is present.
+
+Run the production build locally:
+
+```bash
+npm run build
+PORT=8080 npm start     # open http://localhost:8080
+```
+
+### Render (one-click via Blueprint)
+
+The repo ships a [`render.yaml`](./render.yaml) Blueprint for a free Render web service:
+
+1. Push to GitHub.
+2. Render dashboard → **New → Blueprint** → select this repo → **Apply**.
+3. Render runs `npm ci --include=dev && npm run build`, starts it with `npm start`, and health-checks
+   `/api/health`. No secrets needed — every integration is keyless.
+
+Notes: the free tier sleeps after ~15 min idle (first request cold-starts); data uses **ephemeral
+SQLite** and resets on each redeploy. For durable data, mount a disk and point `DB_PATH` at it, or
+swap the repository adapter for Postgres.

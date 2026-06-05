@@ -8,7 +8,10 @@ import { App } from './ui/App.js';
 import './styles.css';
 
 // Composition root: choose the concrete adapters once and inject them.
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4000';
+// In a production build the API is same-origin, so default to a relative base.
+const apiBaseUrl =
+  import.meta.env.VITE_API_BASE_URL ??
+  (import.meta.env.PROD ? '' : 'http://localhost:4000');
 const gateway = new HttpProjectGateway(apiBaseUrl);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

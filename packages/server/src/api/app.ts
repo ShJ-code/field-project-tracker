@@ -1,3 +1,4 @@
+import path from 'node:path';
 import cors from 'cors';
 import express, {
   type ErrorRequestHandler,
@@ -16,6 +17,8 @@ export interface AppDependencies {
   siteWeatherService: SiteWeatherService;
   geocodingService: GeocodingService;
   webOrigin: string;
+  /** When set, the built SPA in this directory is served on the same origin. */
+  webDistPath?: string;
 }
 
 /**
@@ -37,6 +40,21 @@ export function createApp(deps: AppDependencies): Express {
     createProjectsRouter(deps.projectService, deps.siteWeatherService),
   );
   app.use('/api/geocode', createGeocodeRouter(deps.geocodingService));
+
+  // In production the API also serves the built SPA, so everything is one
+  // origin (no CORS). Mounted after the API routes; a client-side GET that
+  // isn't an API call falls back to index.html.
+  if (deps.webDistPath) {
+    const webDistPath = deps.webDistPath;
+    app.use(express.static(webDistPath));
+    app.use((req, res, next) => {
+      if (req.method !== 'GET' || req.path.startsWith('/api/')) {
+        next();
+        return;
+      }
+      res.sendFile(path.join(webDistPath, 'index.html'));
+    });
+  }
 
   app.use(errorHandler);
   return app;

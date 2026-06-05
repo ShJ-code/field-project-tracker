@@ -1,0 +1,20 @@
+# Render Blueprint: single free web service that builds the SPA + API and serves
+# both on one origin. Apply via Render dashboard -> New -> Blueprint.
+services:
+  - type: web
+    name: field-project-tracker
+    runtime: node
+    plan: free
+    branch: main
+    # --include=dev so the build tools (vite, esbuild) install despite NODE_ENV=production
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22"
+      # Identifies the app to Nominatim per its usage policy (geocoding seam).
+      - key: GEOCODER_USER_AGENT
+        value: "field-project-tracker/0.1 (+https://github.com/ShJ-code/field-project-tracker)"
