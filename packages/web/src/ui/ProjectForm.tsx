@@ -8,8 +8,8 @@ import {
   type Project,
   type ProjectStatus,
 } from '@field-tracker/shared';
-import { useGeocoder } from '../app/use-geocoder.js';
-import { labelize } from './format.js';
+import { useGeocoder } from '../app/use-geocoder';
+import { labelize } from './format';
 
 interface Props {
   /** When provided, the form edits this project; otherwise it creates a new one. */

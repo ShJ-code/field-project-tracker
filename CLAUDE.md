@@ -72,8 +72,14 @@ This is the single source of truth across the API seam.
 
 ## Conventions that aren't obvious
 
-- **Local imports use explicit `.js` extensions** (e.g. `./risk.js` for `risk.ts`). This is required
-  for the server's Node ESM runtime and works for the web via Vite; keep it consistent on both sides.
+- **Import-extension convention differs by package.** The **server** uses explicit `.js` extensions
+  (e.g. `./risk.js` for `risk.ts`) — required by its Node ESM runtime; esbuild resolves them in the
+  build. The **web** package uses **extensionless** relative imports (e.g. `./format`) — the standard
+  Vite/bundler style.
+- **Keep `.gitignore` rules for runtime artifacts anchored.** An unanchored `data/` once matched
+  `packages/web/src/data/` and silently kept that source folder out of git (the deploy only failed in
+  CI, where the files were absent). Anchor such rules (`/data/`, `/packages/server/data/`) or rely on
+  file-glob rules like `*.db*`.
 - **The shared package is resolved to source via a path alias**, declared in three places that must
   stay in sync: each `tsconfig.json` (`paths`), `packages/web/vite.config.ts` (`resolve.alias`), and
   `packages/server/vitest.config.ts` (`resolve.alias`).

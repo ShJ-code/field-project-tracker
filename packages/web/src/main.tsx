@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { GatewayProvider } from './app/gateway-context.js';
-import { HttpProjectGateway } from './data/http-project-gateway.js';
-import { createMapLibreAdapter } from './integrations/map/maplibre-adapter.js';
-import { App } from './ui/App.js';
+import { GatewayProvider } from './app/gateway-context';
+import { HttpProjectGateway } from './data/http-project-gateway';
+import { createMapLibreAdapter } from './integrations/map/maplibre-adapter';
+import { App } from './ui/App';
 import './styles.css';
 
 // Composition root: choose the concrete adapters once and inject them.

@@ -1,6 +1,6 @@
 import type { Project } from '@field-tracker/shared';
-import { useSiteWeather } from '../app/use-site-weather.js';
-import { labelize } from './format.js';
+import { useSiteWeather } from '../app/use-site-weather';
+import { labelize } from './format';
 
 /**
  * Compact site-risk badge for a table row. Pulls live weather for the project's

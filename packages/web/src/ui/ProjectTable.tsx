@@ -1,6 +1,6 @@
 import type { Project } from '@field-tracker/shared';
-import { labelize } from './format.js';
-import { RiskBadge } from './RiskBadge.js';
+import { labelize } from './format';
+import { RiskBadge } from './RiskBadge';
 
 interface Props {
   projects: Project[];

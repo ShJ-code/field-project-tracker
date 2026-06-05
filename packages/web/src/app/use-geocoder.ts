@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import type { GeocodeResult } from '@field-tracker/shared';
-import { useGateway } from './gateway-context.js';
+import { useGateway } from './gateway-context';
 
 export type GeocoderStatus = 'idle' | 'loading' | 'empty' | 'error';
 

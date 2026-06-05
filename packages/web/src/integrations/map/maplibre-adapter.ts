@@ -4,7 +4,7 @@ import type {
   MapAdapterFactory,
   MapMarker,
   MapPopupContent,
-} from './map-adapter.js';
+} from './map-adapter';
 
 // Keyless vector tiles from OpenFreeMap; override with VITE_MAP_STYLE_URL.
 const DEFAULT_STYLE = 'https://tiles.openfreemap.org/styles/liberty';

@@ -1,5 +1,5 @@
 import { createContext, useContext, type ReactNode } from 'react';
-import type { ProjectGateway } from '../data/project-gateway.js';
+import type { ProjectGateway } from '../data/project-gateway';
 
 /**
  * Dependency injection for the frontend: the concrete gateway is constructed

@@ -4,7 +4,7 @@ import type {
   Project,
   UpdateProjectInput,
 } from '@field-tracker/shared';
-import { useGateway } from './gateway-context.js';
+import { useGateway } from './gateway-context';
 
 /**
  * View-model for the project list: owns the in-memory state and orchestrates

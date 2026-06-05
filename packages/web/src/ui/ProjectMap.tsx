@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef } from 'react';
 import type { Project } from '@field-tracker/shared';
-import { useSiteWeather } from '../app/use-site-weather.js';
+import { useSiteWeather } from '../app/use-site-weather';
 import type {
   MapAdapter,
   MapAdapterFactory,
   MapPopupContent,
-} from '../integrations/map/map-adapter.js';
-import { labelize } from './format.js';
+} from '../integrations/map/map-adapter';
+import { labelize } from './format';
 
 interface Props {
   createMap: MapAdapterFactory;

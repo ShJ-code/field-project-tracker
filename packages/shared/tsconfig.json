@@ -1,4 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // shared has no ambient type deps; don't scan node_modules/@types
+    "types": []
+  },
   "include": ["src"]
 }

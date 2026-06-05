@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Project, SiteWeather } from '@field-tracker/shared';
-import { useGateway } from './gateway-context.js';
+import { useGateway } from './gateway-context';
 
 /**
  * Fetches weather + computed site risk for a project. Results are cached by

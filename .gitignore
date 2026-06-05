@@ -1,7 +1,9 @@
 node_modules/
 dist/
 build/
-data/
+# SQLite runtime DB — anchored so it never matches source dirs (e.g. web/src/data)
+/data/
+/packages/server/data/
 *.db
 *.db-shm
 *.db-wal
@@ -10,6 +12,7 @@ data/
 .DS_Store
 coverage/
 *.log
+logs.txt
 .vite/
 playwright-report/
 test-results/

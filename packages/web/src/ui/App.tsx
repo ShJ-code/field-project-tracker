@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import type { CreateProjectInput } from '@field-tracker/shared';
-import { useProjects } from '../app/use-projects.js';
-import type { MapAdapterFactory } from '../integrations/map/map-adapter.js';
-import { ProjectForm } from './ProjectForm.js';
-import { ProjectMap } from './ProjectMap.js';
-import { ProjectTable } from './ProjectTable.js';
+import { useProjects } from '../app/use-projects';
+import type { MapAdapterFactory } from '../integrations/map/map-adapter';
+import { ProjectForm } from './ProjectForm';
+import { ProjectMap } from './ProjectMap';
+import { ProjectTable } from './ProjectTable';
 
 interface AppProps {
   createMap: MapAdapterFactory;
