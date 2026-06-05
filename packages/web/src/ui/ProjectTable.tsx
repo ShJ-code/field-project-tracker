@@ -6,7 +6,6 @@ interface Props {
   projects: Project[];
   selectedId?: string | null;
   onSelect?: (project: Project) => void;
-  onEdit: (project: Project) => void;
   onComplete: (id: string) => Promise<unknown> | void;
   onDelete: (id: string) => Promise<unknown> | void;
 }
@@ -15,7 +14,6 @@ export function ProjectTable({
   projects,
   selectedId,
   onSelect,
-  onEdit,
   onComplete,
   onDelete,
 }: Props) {
@@ -65,9 +63,6 @@ export function ProjectTable({
               className="table__actions"
               onClick={(event) => event.stopPropagation()}
             >
-              <button className="button--ghost" onClick={() => onEdit(project)}>
-                Edit
-              </button>
               <button
                 className="button--ghost"
                 disabled={project.status === 'completed'}

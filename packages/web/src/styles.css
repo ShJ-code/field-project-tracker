@@ -40,6 +40,37 @@ body {
   margin-top: 20px;
 }
 
+/* Wide screens: form + map side by side on top, table full-width below, so
+   all three panels are visible without scrolling. */
+@media (min-width: 1024px) {
+  .app__layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "form map"
+      "list list";
+    align-items: stretch;
+  }
+  .panel--form {
+    grid-area: form;
+  }
+  .panel--map {
+    grid-area: map;
+  }
+  .panel--list {
+    grid-area: list;
+  }
+}
+
+/* The map fills its panel so it can match the form's height when they sit
+   side by side. */
+.panel--map {
+  display: flex;
+  flex-direction: column;
+}
+.panel--map .map {
+  flex: 1 1 auto;
+}
+
 .panel {
   background: var(--panel);
   border: 1px solid var(--border);
@@ -321,7 +352,7 @@ button:disabled {
 
 /* --- Map --- */
 .map {
-  height: 440px;
+  min-height: 380px;
   border-radius: var(--radius);
   overflow: hidden;
   border: 1px solid var(--border);

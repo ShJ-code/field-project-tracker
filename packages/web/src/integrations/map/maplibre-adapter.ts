@@ -18,6 +18,7 @@ const DEFAULT_ZOOM = 3.2;
 class MapLibreAdapter implements MapAdapter {
   private readonly map: maplibregl.Map;
   private readonly markers = new Map<string, maplibregl.Marker>();
+  private readonly resizeObserver: ResizeObserver;
   private popup: maplibregl.Popup | null = null;
   private clickHandler: ((id: string) => void) | null = null;
 
@@ -32,6 +33,10 @@ class MapLibreAdapter implements MapAdapter {
       new maplibregl.NavigationControl({ showCompass: false }),
       'top-right',
     );
+    // The container's height is driven by flex/grid layout, so keep the canvas
+    // in sync as it changes (MapLibre only tracks window resizes on its own).
+    this.resizeObserver = new ResizeObserver(() => this.map.resize());
+    this.resizeObserver.observe(container);
   }
 
   setMarkers(markers: MapMarker[]): void {
@@ -101,6 +106,7 @@ class MapLibreAdapter implements MapAdapter {
   }
 
   destroy(): void {
+    this.resizeObserver.disconnect();
     this.popup?.remove();
     this.map.remove();
   }

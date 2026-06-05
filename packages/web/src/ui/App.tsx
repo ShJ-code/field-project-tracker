@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { CreateProjectInput, Project } from '@field-tracker/shared';
+import type { CreateProjectInput } from '@field-tracker/shared';
 import { useProjects } from '../app/use-projects.js';
 import type { MapAdapterFactory } from '../integrations/map/map-adapter.js';
 import { ProjectForm } from './ProjectForm.js';
@@ -13,16 +13,16 @@ interface AppProps {
 export function App({ createMap }: AppProps) {
   const { projects, loading, error, create, update, complete, remove } =
     useProjects();
-  const [editing, setEditing] = useState<Project | null>(null);
+  // A single source of truth: the selected project is also the one being
+  // edited. null = "New project" mode.
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const selectedProject = projects.find((p) => p.id === selectedId) ?? null;
 
   async function handleSubmit(input: CreateProjectInput) {
-    if (editing) {
-      await update(editing.id, input);
-      setEditing(null);
+    if (selectedProject) {
+      await update(selectedProject.id, input);
     } else {
-      const created = await create(input);
-      setSelectedId(created.id);
+      await create(input); // stay in New mode; the form clears itself
     }
   }
 
@@ -36,17 +36,26 @@ export function App({ createMap }: AppProps) {
       </header>
 
       <main className="app__layout">
-        <section className="panel">
-          <h2>{editing ? 'Edit project' : 'New project'}</h2>
+        <section className="panel panel--form">
+          <div className="panel__header">
+            <h2>{selectedProject ? 'Edit project' : 'New project'}</h2>
+            {selectedProject && (
+              <button
+                className="button--ghost"
+                onClick={() => setSelectedId(null)}
+              >
+                + New project
+              </button>
+            )}
+          </div>
           <ProjectForm
-            key={editing?.id ?? 'new'}
-            initial={editing}
+            key={selectedId ?? 'new'}
+            initial={selectedProject}
             onSubmit={handleSubmit}
-            onCancel={editing ? () => setEditing(null) : undefined}
           />
         </section>
 
-        <section className="panel">
+        <section className="panel panel--list">
           <div className="panel__header">
             <h2>Projects</h2>
             <span className="muted">{projects.length} total</span>
@@ -59,21 +68,19 @@ export function App({ createMap }: AppProps) {
               projects={projects}
               selectedId={selectedId}
               onSelect={(project) => setSelectedId(project.id)}
-              onEdit={(project) => setEditing(project)}
               onComplete={complete}
               onDelete={async (id) => {
                 await remove(id);
                 if (selectedId === id) setSelectedId(null);
-                if (editing?.id === id) setEditing(null);
               }}
             />
           )}
         </section>
 
-        <section className="panel">
+        <section className="panel panel--map">
           <div className="panel__header">
             <h2>Map</h2>
-            <span className="muted">Click a marker or row to focus</span>
+            <span className="muted">Click a marker or row to select</span>
           </div>
           <ProjectMap
             createMap={createMap}
