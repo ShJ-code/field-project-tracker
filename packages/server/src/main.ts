@@ -25,10 +25,13 @@ try {
 const config = loadConfig();
 
 const projectRepository = new SqliteProjectRepository(config.dbPath);
-const weatherProvider = new OpenMeteoWeatherProvider(config.openMeteoBaseUrl);
+const weatherProvider = new OpenMeteoWeatherProvider(
+  config.openMeteoBaseUrl,
+  config.userAgent,
+);
 const geocoder = new NominatimGeocoder(
   config.nominatimBaseUrl,
-  config.geocoderUserAgent,
+  config.userAgent,
 );
 
 const projectService = new ProjectService(projectRepository);

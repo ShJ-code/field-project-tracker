@@ -1,4 +1,5 @@
 import type { WeatherSnapshot } from '@field-tracker/shared';
+import { UpstreamError } from '../domain/errors.js';
 import type { WeatherProvider } from '../ports/weather-provider.js';
 
 /** Minimal shape of the Open-Meteo `current` response we rely on. */
@@ -22,6 +23,7 @@ interface OpenMeteoResponse {
 export class OpenMeteoWeatherProvider implements WeatherProvider {
   constructor(
     private readonly baseUrl: string,
+    private readonly userAgent: string,
     private readonly fetchFn: typeof fetch = fetch,
   ) {}
 
@@ -35,14 +37,24 @@ export class OpenMeteoWeatherProvider implements WeatherProvider {
     );
     url.searchParams.set('wind_speed_unit', 'kmh');
 
-    const response = await this.fetchFn(url.toString());
+    // A descriptive User-Agent matters in production: some hosts/CDNs block the
+    // default runtime UA from datacenter IPs, which surfaced as failed weather
+    // lookups on the deployed app.
+    const response = await this.fetchFn(url.toString(), {
+      headers: { 'User-Agent': this.userAgent, Accept: 'application/json' },
+    });
     if (!response.ok) {
-      throw new Error(`Open-Meteo request failed with status ${response.status}`);
+      throw new UpstreamError(
+        `Open-Meteo request failed with status ${response.status}`,
+        response.status,
+      );
     }
 
     const data = (await response.json()) as OpenMeteoResponse;
     if (!data.current) {
-      throw new Error('Open-Meteo response did not include current conditions');
+      throw new UpstreamError(
+        'Open-Meteo response did not include current conditions',
+      );
     }
 
     const c = data.current;

@@ -1,4 +1,5 @@
 import type { GeocodeResult } from '@field-tracker/shared';
+import { UpstreamError } from '../domain/errors.js';
 import type { Geocoder } from '../ports/geocoder.js';
 
 /** Minimal shape of a Nominatim search result we rely on. */
@@ -35,7 +36,10 @@ export class NominatimGeocoder implements Geocoder {
       headers: { 'User-Agent': this.userAgent, Accept: 'application/json' },
     });
     if (!response.ok) {
-      throw new Error(`Nominatim request failed with status ${response.status}`);
+      throw new UpstreamError(
+        `Nominatim request failed with status ${response.status}`,
+        response.status,
+      );
     }
 
     const results = (await response.json()) as NominatimResult[];

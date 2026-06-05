@@ -4,7 +4,8 @@ export interface AppConfig {
   dbPath: string;
   openMeteoBaseUrl: string;
   nominatimBaseUrl: string;
-  geocoderUserAgent: string;
+  /** Identifies this app to external APIs (weather, geocoding). */
+  userAgent: string;
   webOrigin: string;
 }
 
@@ -16,8 +17,11 @@ export function loadConfig(): AppConfig {
       process.env.OPEN_METEO_BASE_URL ?? 'https://api.open-meteo.com',
     nominatimBaseUrl:
       process.env.NOMINATIM_BASE_URL ?? 'https://nominatim.openstreetmap.org',
-    geocoderUserAgent:
-      process.env.GEOCODER_USER_AGENT ?? 'field-project-tracker/0.1',
+    // APP_USER_AGENT is preferred; GEOCODER_USER_AGENT kept for back-compat.
+    userAgent:
+      process.env.APP_USER_AGENT ??
+      process.env.GEOCODER_USER_AGENT ??
+      'field-project-tracker/0.1 (+https://github.com/ShJ-code/field-project-tracker)',
     webOrigin: process.env.WEB_ORIGIN ?? 'http://localhost:5173',
   };
 }

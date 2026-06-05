@@ -9,3 +9,14 @@ export class NotFoundError extends Error {
     this.name = 'NotFoundError';
   }
 }
+
+/** A call to an external provider (weather, geocoding) failed. */
+export class UpstreamError extends Error {
+  constructor(
+    message: string,
+    readonly providerStatus?: number,
+  ) {
+    super(message);
+    this.name = 'UpstreamError';
+  }
+}

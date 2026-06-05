@@ -15,6 +15,7 @@ services:
         value: production
       - key: NODE_VERSION
         value: "22"
-      # Identifies the app to Nominatim per its usage policy (geocoding seam).
-      - key: GEOCODER_USER_AGENT
+      # Identifies the app to external APIs (weather + geocoding) per their policies.
+      # Required in production: some CDNs block the default runtime User-Agent.
+      - key: APP_USER_AGENT
         value: "field-project-tracker/0.1 (+https://github.com/ShJ-code/field-project-tracker)"

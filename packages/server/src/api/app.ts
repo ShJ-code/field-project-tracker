@@ -8,7 +8,7 @@ import { ZodError } from 'zod';
 import type { GeocodingService } from '../domain/geocoding-service.js';
 import type { ProjectService } from '../domain/project-service.js';
 import type { SiteWeatherService } from '../domain/site-weather-service.js';
-import { NotFoundError } from '../domain/errors.js';
+import { NotFoundError, UpstreamError } from '../domain/errors.js';
 import { createGeocodeRouter } from './geocode-router.js';
 import { createProjectsRouter } from './projects-router.js';
 
@@ -68,6 +68,14 @@ const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   }
   if (err instanceof NotFoundError) {
     res.status(404).json({ error: err.message });
+    return;
+  }
+  if (err instanceof UpstreamError) {
+    console.error('Upstream provider error:', err.message);
+    res.status(502).json({
+      error: 'Upstream provider request failed',
+      providerStatus: err.providerStatus,
+    });
     return;
   }
   console.error('Unhandled error:', err);

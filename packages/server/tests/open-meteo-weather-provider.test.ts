@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { OpenMeteoWeatherProvider } from '../src/adapters/open-meteo-weather-provider.js';
+import { UpstreamError } from '../src/domain/errors.js';
+
+const UA = 'field-project-tracker/test';
 
 function stubFetch(payload: unknown, ok = true, status = 200): typeof fetch {
   return vi.fn(async () =>
@@ -22,7 +25,11 @@ describe('OpenMeteoWeatherProvider', () => {
         wind_speed_10m: 18.3,
       },
     });
-    const provider = new OpenMeteoWeatherProvider('https://example.test', fetchFn);
+    const provider = new OpenMeteoWeatherProvider(
+      'https://example.test',
+      UA,
+      fetchFn,
+    );
 
     const snapshot = await provider.getCurrent(40.69, -80.31);
 
@@ -46,22 +53,29 @@ describe('OpenMeteoWeatherProvider', () => {
         wind_speed_10m: 5,
       },
     });
-    const provider = new OpenMeteoWeatherProvider('https://example.test', fetchFn);
+    const provider = new OpenMeteoWeatherProvider(
+      'https://example.test',
+      UA,
+      fetchFn,
+    );
 
     await provider.getCurrent(12.34, 56.78);
 
-    const calledUrl = (fetchFn as unknown as ReturnType<typeof vi.fn>).mock
-      .calls[0][0] as string;
+    const mock = fetchFn as unknown as ReturnType<typeof vi.fn>;
+    const [calledUrl, init] = mock.mock.calls[0];
     expect(calledUrl).toContain('latitude=12.34');
     expect(calledUrl).toContain('longitude=56.78');
     expect(calledUrl).toContain('wind_speed_unit=kmh');
+    expect((init as RequestInit).headers).toMatchObject({ 'User-Agent': UA });
   });
 
-  it('throws when the response is not ok', async () => {
+  it('throws an UpstreamError with the status when the response is not ok', async () => {
     const provider = new OpenMeteoWeatherProvider(
       'https://example.test',
+      UA,
       stubFetch({}, false, 503),
     );
+    await expect(provider.getCurrent(0, 0)).rejects.toBeInstanceOf(UpstreamError);
     await expect(provider.getCurrent(0, 0)).rejects.toThrow(/503/);
   });
 });
