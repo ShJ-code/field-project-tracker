@@ -1,20 +1,30 @@
-# Render Blueprint: single free web service that builds the SPA + API and serves
-# both on one origin. Apply via Render dashboard -> New -> Blueprint.
+# Render Blueprint: single always-on web service that builds the SPA + API and
+# serves both on one origin. Apply via Render dashboard -> New -> Blueprint.
 services:
   - type: web
     name: field-project-tracker
     runtime: node
-    plan: free
+    # Starter is paid and always-on (no spin-down); a persistent disk also
+    # requires a paid instance.
+    plan: starter
     branch: main
     # --include=dev so the build tools (vite, esbuild) install despite NODE_ENV=production
     buildCommand: npm ci --include=dev && npm run build
     startCommand: npm run start
     healthCheckPath: /api/health
+    # Persistent disk so the SQLite database survives restarts and redeploys.
+    disk:
+      name: data
+      mountPath: /var/data
+      sizeGB: 1
     envVars:
       - key: NODE_ENV
         value: production
       - key: NODE_VERSION
         value: "22"
+      # Put the SQLite file on the persistent disk (see disk.mountPath above).
+      - key: DB_PATH
+        value: /var/data/field-tracker.db
       # Identifies the app to external APIs (weather + geocoding) per their policies.
       # Required in production: some CDNs block the default runtime User-Agent.
       - key: APP_USER_AGENT

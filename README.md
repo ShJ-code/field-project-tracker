@@ -140,13 +140,15 @@ PORT=8080 npm start     # open http://localhost:8080
 
 ### Render (one-click via Blueprint)
 
-The repo ships a [`render.yaml`](./render.yaml) Blueprint for a free Render web service:
+The repo ships a [`render.yaml`](./render.yaml) Blueprint:
 
 1. Push to GitHub.
 2. Render dashboard → **New → Blueprint** → select this repo → **Apply**.
 3. Render runs `npm ci --include=dev && npm run build`, starts it with `npm start`, and health-checks
    `/api/health`. No secrets needed — every integration is keyless.
 
-Notes: the free tier sleeps after ~15 min idle (first request cold-starts); data uses **ephemeral
-SQLite** and resets on each redeploy. For durable data, mount a disk and point `DB_PATH` at it, or
-swap the repository adapter for Postgres.
+The Blueprint uses a paid **Starter** instance (always-on, no spin-down) with a **persistent disk**
+mounted at `/var/data`; `DB_PATH` points the SQLite file there, so data survives restarts and
+redeploys. To run it cost-free instead, set `plan: free` and drop the `disk:` block (the SQLite file
+then lives in the ephemeral container and resets on redeploy, and the instance sleeps after ~15 min
+idle). For a heavier-duty datastore, swap the repository adapter for Postgres.
